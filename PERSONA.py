@@ -11,7 +11,7 @@
 #     <th style="text-align:center">Autor</th> 
 #   </tr>
 #   <tr>
-#     <td style="text-align:left">06/11/2018</td>
+#     <td style="text-align:left">21/11/2018</td>
 #     <td style="text-align:left">Kevin Nakasaki</td> 
 #   </tr>
 # </table>
@@ -711,7 +711,7 @@ df_aw['AW'] = np.where( df_aw['AWARENESS'] == 1, 1, 0 )
 df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
 df_awareness = df_awareness[ pd.Series(['CELEBRIDADE','FLIGHT','AW', 'ID']) ].pivot_table('ID',['CELEBRIDADE','FLIGHT'],'AW')
 df_awareness["AWARENESS"] = df_awareness['S'] / (df_awareness['S'] + df_awareness['N'])
-df_awareness["AWARENESS_NIVEL"] = np.where( df_awareness['AWARENESS'] >= 0.65, 'Alto', 'Baixo' )
+df_awareness["AWARENESS_NIVEL"] = np.where( df_awareness['AWARENESS'] >= 0.70, 'Alto', 'Baixo' )
 
 cols = [
     'ID',
