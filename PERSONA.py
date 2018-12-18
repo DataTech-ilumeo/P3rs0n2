@@ -151,7 +151,7 @@ def writeDF_FL(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_FL + r'\
 if FLIGHT_ATUAL == 22:
     df = pd.read_csv(PATH_R + '\SERIE_HISTORICA_FL21.txt', sep='\t', encoding= 'ISO-8859-1')
 else:
-    df = pd.read_csv(PATH_FLX + '\SERIE_HISTORICA_FL{0}.txt'.format(str(int(FLIGHT_ATUAL)-1)), sep='\t', encoding= 'ISO-8859-1')
+    df = pd.read_csv(PATH_FLX + '\SERIE_HISTORICA_FL{}.txt'.format(str(int(FLIGHT_ATUAL)-1)), sep=',', encoding= 'UTF-8')
 
 
 # ---
@@ -170,6 +170,10 @@ else:
 #   <tr>
 #     <td style="text-align:center">09/10/2018</td>
 #     <td style="text-align:center">22</td> 
+#   </tr>
+#   <tr>
+#     <td style="text-align:center">12/11/2018</td>
+#     <td style="text-align:center">23</td> 
 #   </tr>
 # </table>
 
@@ -308,12 +312,13 @@ df_categorias = loadDF('\CATEGORIAS', enc= 'ISO-8859-1', sep='\t')
 
 
 df4 = df_categorias.reset_index().set_index('CELEBRIDADE')
+df5 = df.copy()
 
 #Join entre BASE e CATEGORIAS
-df = df.reset_index().set_index('CELEBRIDADE').join(df4, how='inner').reset_index().set_index('IX')
+df5 = df5.reset_index().set_index('CELEBRIDADE').join(df4).reset_index().set_index('IX')
 
 #Mostra quais CELEBRIDADES não estão classificadas
-df6 = df[ df['CATEGORIA'].isna()]
+df6 = df5[ df5['CATEGORIA'].isna()]
 
 #Cria um arquivo se houver CELEBRIDADES NÃO CATEGORIZADAS
 if df6.shape[:1] == (0,):
@@ -322,14 +327,16 @@ else:
     writeDF(df6, 'COMP_CATEG')
 
 
-# <h3 style='color:black'>7.2 Tratamento do DataFrame de Categorias</h3>
-
-# Atualiza o DataFrame 'df_categorias' resetando o índice do DataFrame. **Por não ter o argumento *drop=True*, o índice antigo se transforma numa nova coluna no DataFrame**.
-# 
-# Em seguida cria um DataFrame no qual o índice é a coluna 'CELEBRIDADE' e a coluna do DataFrame é a 'CATEGORIA', agrupando tudo através da função *lambda* definida, ao invés do padrão que é *numpy.mean* (**verificar com o Danilo para quê isso foi feito**):
-
 # In[21]:
 
+
+#<h3 style='color:black'>7.2 Tratamento do DataFrame de Categorias</h3>
+
+#Atualiza o DataFrame 'df_categorias' resetando o índice do DataFrame. **Por não ter o argumento *drop=True*, 
+#o índice antigo se transforma numa nova coluna no DataFrame**.
+#Em seguida cria um DataFrame no qual o índice é a coluna 'CELEBRIDADE' e a coluna do DataFrame é a 'CATEGORIA', 
+#agrupando tudo através da função *lambda* definida, ao invés do padrão que é *numpy.mean* 
+#(**verificar com o Danilo para quê isso foi feito**):
 
 #df_categorias = df_categorias  \
 #    .reset_index() \
@@ -645,7 +652,7 @@ df_base["TEM_FILHOS"] = np.where(df["TEM_FILHOS"] == 1, "Sim", "Não")
 
 # Deleta as colunas de 'df_base' que estão com os valores antigos, usados para puxar os valores no *join* e renomeia as colunas que vieram das "tabelas auxiliares" para fazer o papel das colunas deletadas:
 
-# In[ ]:
+# In[44]:
 
 
 del df_base["ESTADO"]
@@ -667,7 +674,7 @@ df_base.rename( columns ={
 # Ordena pela coluna 'ID' de forma ascendente e a configura para ser índice (key).
 # Em seguida usa a função 'writeDF' para escrever o DataFrame no arquivo "VW_BASE.txt":
 
-# In[ ]:
+# In[45]:
 
 
 if OPT_GERAR_VW_BASE == 1:
@@ -682,7 +689,7 @@ if OPT_GERAR_VW_BASE == 1:
 
 # <h3 style='color:blue'>11.2. VW_BASE_METRICAS (FULL)</h3>
 
-# In[ ]:
+# In[46]:
 
 
 df_awareness = df.copy()
@@ -690,7 +697,7 @@ df_awareness = df.copy()
 df_awareness['AW'] = np.where( df_awareness['AWARENESS'] == 1, 'S', 'N' )
 
 
-# In[ ]:
+# In[47]:
 
 
 df_aw = df.copy()
@@ -698,7 +705,7 @@ df_aw = df.copy()
 df_aw['AW'] = np.where( df_aw['AWARENESS'] == 1, 1, 0 )
 
 
-# In[ ]:
+# In[48]:
 
 
 df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
@@ -764,7 +771,7 @@ df_metr2 = df_metr1[['FLIGHT', 'METRICA', 'POSITIVO_G', 'NEGATIVO_G']]
 df_metr2 = df_metr2.groupby(['FLIGHT', 'METRICA']).mean().sort_index(ascending=False)
 
 
-# In[ ]:
+# In[49]:
 
 
 # Join no df_metricas
@@ -772,7 +779,7 @@ df_metricas = df_metricas.join(df_metr2, how='inner', on=['FLIGHT', 'METRICA'])
 df_metricas.index
 
 
-# In[ ]:
+# In[50]:
 
 
 if OPT_GERAR_VW_BASE_METRICAS == 1:
@@ -781,144 +788,149 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
     df_metricas.rename( columns ={ "index" : "ID"}, inplace=True)    
     df_metricas = df_metricas.set_index("ID")
     writeDF(df_metricas, 'VW_BASE_METRICAS')
+    #Arquivo para calcular o awareness de forma correta, separado por respondentes
     writeDF(df_aw, 'VW_AW')
     
     print("Arquivo exportado")
 
 
-# ---
+# -----
 
 # <h3 style='color:purple'>VW_COMPARATIVO (passo-a-passo)</h3>
 
-# In[ ]:
+# In[51]:
 
 
 #df_latest_flight = df.groupby('CELEBRIDADE').max()['FLIGHT'].reset_index().set_index(['CELEBRIDADE','FLIGHT'])
-#print(df_latest_flight.head())
 
 
-# In[ ]:
+# In[52]:
 
 
 #df_comp = df_metricas \
-#    .join(df['AWARENESS'], rsuffix='_SN')
-#print(df_comp.head())
+#    .join(df['AWARENESS'], rsuffix='_SN') 
 
 
-# In[ ]:
+# In[53]:
+
+
+#Visualização
+#df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
+
+
+# In[54]:
 
 
 #df_count_total = df \
 #        .groupby(['FLIGHT','CELEBRIDADE'], as_index=False)['ID'] \
 #        .count()
-#print(df_count_total.head(10))
-
-
-# In[ ]:
-
-
-#df_count_total.rename( columns ={ "ID": "COUNT"}, inplace=True)
-#print(df_count_total.head())
-
-
-# In[ ]:
-
-
+#df_count_total.rename( columns ={ "ID": "COUNT"}, inplace=True)    
 #df_count_aw = df[ df['AWARENESS']==1 ] \
 #        .groupby(['FLIGHT','CELEBRIDADE'], as_index=False)['ID'] \
 #        .count()
-#print(df_count_aw.head())
+#df_count_aw.rename( columns ={ "ID": "COUNT"}, inplace=True)    
 
 
-# In[ ]:
-
-
-#df_count_aw.rename( columns ={ "ID": "COUNT"}, inplace=True)
-#print(df_count_aw.head())
-
-
-# In[ ]:
+# In[55]:
 
 
 #df_count = df_count_total \
 #        .set_index(['FLIGHT','CELEBRIDADE']) \
 #        .join(df_count_aw.set_index(['FLIGHT','CELEBRIDADE']), rsuffix='_AW')
-#print(df_count.head())
 
 
-# In[ ]:
+# In[56]:
+
+
+#Visualização
+#df_count.index
+
+
+# In[57]:
 
 
 #del df_count_total
 #del df_count_aw
 
 
-# In[ ]:
+# In[58]:
+
+
+#df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
+
+
+# In[59]:
 
 
 #df_comp = df_comp[ df_comp['AWARENESS_SN'] == 1 ] \
 #        .groupby(['FLIGHT','CELEBRIDADE', 'FOTO_M','FOTO_P','FOTO_G','AWARENESS', 'AWARENESS_NIVEL', 'CONSTRUCTO','METRICA'], as_index=False) \
 #        .agg({ "TOP2" : "sum", "BOT2" : "sum" })
-#print(df_comp.head())
 
 
-# In[ ]:
+# In[60]:
+
+
+#Visualização --> No passo acima algumas celebridades do flight 23 somem...
+#verificacao1 = df_comp[df_comp['FLIGHT'] == 23]
+
+
+# In[61]:
+
+
+#Visualização --> No passo acima algumas celebridades do flight 23 somem porque algumas das celebridades não têm as fotos,
+# aí ao fazer o groupby utilizando as colunas de fotos, e por estas estarem com valores NaN, as linhas somem.
+#verificacao1['CELEBRIDADE'].unique()
+
+
+# In[62]:
 
 
 #df_comp = df_comp \
 #        .reset_index()  \
 #        .set_index(['FLIGHT','CELEBRIDADE']) \
 #        .join(df_count)
-#print(df_comp.head())
 
 
-# In[ ]:
+# In[63]:
 
 
 #df_comp['TOP2'] = df_comp['TOP2'] / df_comp['COUNT_AW']
 #df_comp['BOT2'] = df_comp['BOT2'] / df_comp['COUNT_AW']
-#print(df_comp['TOP2'].head())
-#print(df_comp['BOT2'].head())
 
 
-# In[ ]:
+# In[64]:
 
 
 #df_comp = df_comp \
 #    .reset_index() \
 #    .set_index(['CELEBRIDADE','FLIGHT']) \
 #    .join( df_latest_flight, how='inner' )
-#print(df_comp.head())
 
 
-# In[ ]:
+# In[65]:
 
 
 #df_comp = df_comp \
 #    .reset_index() \
 #    .set_index(['CONSTRUCTO','METRICA'])
-#print(df_comp.head())
 
 
-# In[ ]:
+# In[66]:
 
 
 #del df_comp['COUNT']
 #del df_comp['COUNT_AW']
 
 
-# In[ ]:
+# In[67]:
 
 
 #df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
-#print(df_compf.head())
 
-
-# -----
 
 # <h3 style='color:blue'>11.3. VW_COMPARATIVO (FULL)</h3>
 
-# In[ ]:
+# In[68]:
 
 
 # Comparativo pelo último flight (21)
@@ -953,7 +965,7 @@ del df_comp['COUNT_AW']
 df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
 
 
-# In[ ]:
+# In[69]:
 
 
 if OPT_GERAR_VW_COMP == 1:
@@ -969,14 +981,14 @@ if OPT_GERAR_VW_COMP == 1:
 
 # <h4 style='color:orange'>(Verificação) Pegar somente a quantidade de 'S' de cada 'CELEBRIDADE':</h4>
 
-# In[ ]:
+# In[70]:
 
 
 idc = df_awareness.index
 print(idc)
 
 
-# In[ ]:
+# In[71]:
 
 
 print(df_awareness.loc[['Alessandra Negrini', '21']])
