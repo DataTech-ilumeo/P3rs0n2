@@ -135,7 +135,7 @@ def writeDF(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_W + r'\{0}{
 # In[7]:
 
 
-def writeDF_FL(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_FL + r'\{0}{1}.txt'.format(file, FLIGHT_ATUAL), header=True, encoding=enc, sep=",", float_format="%.3f", index=False)
+def writeDF_FL(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_FL + r'\{0}{1}.txt'.format(file, FLIGHT_ATUAL), header=True, encoding=enc, sep="\t", float_format="%.3f", index=False)
 
 
 # ---
@@ -151,7 +151,7 @@ def writeDF_FL(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_FL + r'\
 if FLIGHT_ATUAL == 22:
     df = pd.read_csv(PATH_R + '\SERIE_HISTORICA_FL21.txt', sep='\t', encoding= 'ISO-8859-1')
 else:
-    df = pd.read_csv(PATH_FLX + '\SERIE_HISTORICA_FL{}.txt'.format(str(int(FLIGHT_ATUAL)-1)), sep=',', encoding= 'UTF-8')
+    df = pd.read_csv(PATH_FLX + '\SERIE_HISTORICA_FL{}.txt'.format(str(int(FLIGHT_ATUAL)-1)), sep='\t', encoding= 'UTF-8')
 
 
 # ---
