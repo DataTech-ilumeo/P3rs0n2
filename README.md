@@ -24,4 +24,4 @@ Como consequência, foi feita a alteração dos nomes das celebridades da série
 
 * Toda vez que for criar uma nova versão no Jupyter Notebook, é necessário fazer o commit da versão de python funcional e atual (que se tornará a versão anterior).
 
-#1 Adicionado o script original chamado "PERSONA.py" do @Danilo que foi usado como base para as modificações
+#1 Adicionado o script original chamado "PERSONA.py" do Danilo Amorim que foi usado como base para as modificações
