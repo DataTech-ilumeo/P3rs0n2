@@ -17,7 +17,5 @@ Como consequência, foi feita a alteração dos nomes das celebridades da série
 
 ---
 <h2>Pós-controle de versões</h2>
-- O controle de versões será feito só de arquivos .py e do log de alterações entre flights.
-- O notebook do Jupyter (arquivo .ipynb) é armazenado na pasta padrão do projeto.
 
 #1 Adicionado o script original chamado "PERSONA.py" do @Danilo que foi usado como base para as modificações
