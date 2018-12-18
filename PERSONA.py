@@ -3,7 +3,18 @@
 
 # <h1 style='color:#ef9709'>PERSONAS - SÉRIE HISTÓRICA</h1>
 
-# <h4 style='color:blue'>Última atualização: 13/09/2018</h4>
+# <h4 style='color:blue'>Última atualização</h4>
+# 
+# <table style="float:left">
+#   <tr>
+#     <th style="text-align:center">Data</th>
+#     <th style="text-align:center">Autor</th> 
+#   </tr>
+#   <tr>
+#     <td style="text-align:left">06/11/2018</td>
+#     <td style="text-align:left">Kevin Nakasaki</td> 
+#   </tr>
+# </table>
 
 # <h2>1. Preparação</h2>
 
@@ -18,15 +29,69 @@ import pandas as pd
 
 # Cria-se as variáveis para no futuro criar os "txt" finais, que serão importados no SQL Server:
 
-# In[3]:
+# In[2]:
 
 
 # Mudar para 1 quando for gerar as bases
+while True:
+    try:
+        OPT_GERAR_VW_BASE = int(input("Você quer gerar VW_BASE? 1-Sim; 0-Não\n"))       
+    except ValueError:
+        print("O valor inserido não é um número.")
+        continue
+    else:
+        if OPT_GERAR_VW_BASE not in range(0,2):
+            print("Coloque 1-Sim; 0-Não")
+        else:
+            break
 
-OPT_GERAR_VW_BASE = 0
-OPT_GERAR_VW_BASE_METRICAS = 1
-OPT_GERAR_VW_COMP = 0
+while True:
+    try:
+        OPT_GERAR_VW_BASE_METRICAS = int(input("Você quer gerar VW_BASE_METRICAS? 1-Sim; 0-Não\n"))       
+    except ValueError:
+        print("O valor inserido não é um número.")
+        continue
+    else:
+        if OPT_GERAR_VW_BASE_METRICAS not in range(0,2):
+            print("Coloque 1-Sim; 0-Não")
+        else:
+            break
 
+while True:
+    try:
+        OPT_GERAR_VW_COMP = int(input("Você quer gerar VW_COMPARATIVO? 1-Sim; 0-Não\n"))       
+    except ValueError:
+        print("O valor inserido não é um número.")
+        continue
+    else:
+        if OPT_GERAR_VW_COMP not in range(0,2):
+            print("Coloque 1-Sim; 0-Não")
+        else:
+            break
+
+
+# ---
+
+# <h3 style=color:red>1.1 Informe o número do flight atual</h3>
+
+# In[3]:
+
+
+#Colocar o número do flight atual
+while True:
+    try:
+        FLIGHT_ATUAL = int(input("Qual é o número do flight atual? Insira um valor maior que 21!\n"))       
+    except ValueError:
+        print("O valor inserido não é um número.")
+        continue
+    else:
+        if FLIGHT_ATUAL < 22:
+            print("Insira um valor maior que 21!")
+        else:
+            break
+
+
+# ---
 
 # Cria-se uma variável que será usada para o caminho da pasta raíz do projeto; um atalho para buscar os próximos arquivos:
 
@@ -34,105 +99,102 @@ OPT_GERAR_VW_COMP = 0
 
 
 # Se houver acentuação incorrerá em erro
-PATH_R = r'C:\Users\Kevin Nakasaki\Documents\KEVIN\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao\SERIE'
-PATH_W = r'C:\Users\Kevin Nakasaki\Documents\KEVIN\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao'
-PATH_FL = r'C:\Users\Kevin Nakasaki\Documents\KEVIN\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao\22'
+PATH_R = r'C:\Users\Kevin Nakasaki\OneDrive - Ilumeo Brasil\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao\SERIE'
+PATH_W = r'C:\Users\Kevin Nakasaki\OneDrive - Ilumeo Brasil\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao'
+PATH_FL = r'C:\Users\Kevin Nakasaki\OneDrive - Ilumeo Brasil\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao\%s' % FLIGHT_ATUAL
+PATH_FLX = r'C:\Users\Kevin Nakasaki\OneDrive - Ilumeo Brasil\DT_PROJETOS\PERSONA - SERIE HISTORICA\Importacao\%s' % str(int(FLIGHT_ATUAL)-1)
 
 
-# ---
-
-# <h2>2. Início de tratamento da BASE</h2>
-
-# Lê o "txt" SERIE_HISTORICA_v2 e o aloca na variável "df":
+# Define a função 'loadDF' que têm três argumentos:
+# - file = nome do arquivo
+# - enc = tipo de codificação (por padrão é 'utf-8')
+# - sep = tipo do separador dos valores no arquivo (por padrão é ',')
+# 
+# A função lê o arquivo (precisa ser "txt") e o aloca na variável em que for chamado:
 
 # In[5]:
 
 
-# Se houver acentuação incorrerá em erro
-df = pd.read_csv(PATH_R + '\SERIE_HISTORICA_v2.txt', sep='\t', encoding= 'ISO-8859-1')
+def loadDF(file, enc="UTF-8", sep=','): return pd.read_csv(PATH_R + r'\{0}.txt'.format(file), encoding=enc, sep=sep)
 
 
-# ---
-
-# <h2 style='color:red'>3. Append do último flight</h2>
-
-# Junta o último flight à série histórica:
-
-# <h4 style='color:blue'>Data: 13/09/2018 - Flight 22</h4>
+# Define a função 'writeDF' que têm quatro argumentos:
+# - dfr = nome do DataFrame ('df' alguma coisa) que é definido nesse script
+# - file = nome do arquivo "txt" em que o DataFrame vai ser escrito
+# - enc = tipo de codificação (por padrão é 'utf-8')
+# - sep = tipo do separador dos valores no arquivo (por padrão é ',')
+# 
+# A função escreve o DataFrame criado no python em um arquivo "txt":
 
 # In[6]:
 
 
-fl = pd.read_csv(PATH_FL + '\BASE_FL22.txt', sep='\t', encoding= 'ISO-8859-1')
+def writeDF(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_W + r'\{0}{1}.txt'.format(file, FLIGHT_ATUAL), header=True, encoding=enc, sep=",", float_format="%.3f")
 
 
 # In[7]:
 
 
-#<h3 style='color:black'>3.1. JOIN BASE E NUVEM</h3>
+def writeDF_FL(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_FL + r'\{0}{1}.txt'.format(file, FLIGHT_ATUAL), header=True, encoding=enc, sep=",", float_format="%.3f", index=False)
 
+
+# ---
+
+# <h2 style='color:red'>2. Leitura do arquivo da série histórica</h2>
+
+# Lê o "txt" da série histórica que será alocado na variável do DF de Base:
 
 # In[8]:
 
 
-#df_nuv = pd.read_csv(PATH_FL + '\AUX_NUVEM_FL22.txt', sep='\t', encoding= 'ISO-8859-1')
-#df_nuv['CELEBRIDADE'] = df_nuv['Celeb']
+# Se houver acentuação incorrerá em erro
+if FLIGHT_ATUAL == 22:
+    df = pd.read_csv(PATH_R + '\SERIE_HISTORICA_FL21.txt', sep='\t', encoding= 'ISO-8859-1')
+else:
+    df = pd.read_csv(PATH_FLX + '\SERIE_HISTORICA_FL{0}.txt'.format(str(int(FLIGHT_ATUAL)-1)), sep='\t', encoding= 'ISO-8859-1')
 
-# Exceção para excluir a coluna 'ID' do DataFrame auxiliar da nuvem, isto porque o 'ID' deste DF é o 'ID' de inquiridos
-# e não o mesmo 'ID' utilizado na base da 'série histórica'
-#try:
-#    df_nuv = df_nuv[pd.Series(['Nuvem', 'CELEBRIDADE', 'IP'])]
-#    del df_nuv['ID', 'Celeb', 'IP']
-#except:
-#    pass
 
+# ---
+
+# <h2>3. Append do último flight</h2>
+
+# Junta o último flight à série histórica:
+
+# <h4 style='color:blue'>Histórico de flights</h4>
+# 
+# <table style="float:left">
+#   <tr>
+#     <th style="text-align:center">Data</th>
+#     <th style="text-align:center">Flight</th> 
+#   </tr>
+#   <tr>
+#     <td style="text-align:center">09/10/2018</td>
+#     <td style="text-align:center">22</td> 
+#   </tr>
+# </table>
 
 # In[9]:
 
 
-#df_nuv = df_nuv.reset_index(drop=True).set_index(['IP', 'CELEBRIDADE'])
-#fl = fl.reset_index(drop=True).set_index(['IP', 'CELEBRIDADE'])
-
-#fl = fl.join(df_nuv, on=['IP', 'CELEBRIDADE'], how='inner')
+fl = pd.read_csv(PATH_FL + '\BASE_FL{0}.txt'.format(FLIGHT_ATUAL), sep='\t', encoding= 'ISO-8859-1')
 
 
 # In[10]:
 
 
 # Exceção para inserir a coluna 'ID' no dataframe para fazer o join com a base da 'série histórica'.
-# Além disso, iguala a coluna 'OPINIAO' com 'Nuvem' e depois exclui a coluna 'Nuvem'
 
 try:
     fl.insert(0, 'ID', range(0, len(fl)))
-#    fl['OPINIAO'] = fl['Nuvem']
-#    fl = fl[pd.Series(['ID', 'FLIGHT', 'ESTADO', 'IDADE', 'ESTADO_CIVIL', 'TEM_FILHOS', 'RENDA',
-#       'ESCOLARIDADE', 'SEXO', 'AWARENESS', 'NOME', 'OPINIAO',
-#       'LEMBRANCA_DE_MARCA', 'GOSTO_MUITO', 'ME_IDENTIFICO', 'TENHO_RESPEITO',
-#       'PRESTO_ATENCAO', 'CONFIO', 'MUITO_BOM_NAQUILO_QUE_FAZ', 'INTELIGENTE',
-#       'DETERMINADO', 'HONESTO', 'ENGRAÇADO', 'LINDO', 'SEDUTOR', 'DO_POVO',
-#       'CARA_DO_BRASIL', 'INOVADOR', 'GOSTA_DE_DESAFIOS',
-#       'TENHO_VISTO_NA_MIDIA', 'BOA_PARA_PROPAGANDA',
-#       'COMPRARIA_PRODUTOS_QUE_ANUNCIASSE',
-#       'BOA_PARA_PROPAGANDA_PROJETOS_SOCIAIS',
-#       'ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE',
-#       'INDICARIA_PARA_AMIGOS_MARCAS',
-#       'COMENTARIA_COM_AMIGOS_PROJETOS_SOCIAIS_QUE_ANUNCIASSE'])]
-#
-#    del fl['Nuvem']
 except:
     pass
 
 fl = fl.reset_index(drop=True)
 
-# Verifica se a substituição em 'OPINIAO' funcionou corretamente.
-#with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
-#    print(fl[fl['OPINIAO'].notna()].head())
-
 
 # In[11]:
 
 
-#fl.rename(columns={'level_0': 'IP', 'level_1': 'CELEBRIDADE'}, inplace=True)
 fl.columns
 
 
@@ -143,48 +205,36 @@ fl.columns
 len(fl.columns)
 
 
-# <h3 style='color:red'>Merge das tabelas auxiliares tratadas no DF de Base</h3>
-
-# In[13]:
-
-
-df_nuvem_hist = pd.read_csv(PATH_R + '\AUXNUVEM_1.txt', sep='\t', encoding= 'ISO-8859-1')
-df_marcas_hist = pd.read_csv(PATH_R + '\AUXMARCAS_1.txt', sep='\t', encoding= 'ISO-8859-1')
-
-
-# In[14]:
-
-
-df = df.merge(df_nuvem_hist, how='left', on='ID')
-df = df.merge(df_marcas_hist, how='left', on='ID')
-
-
-# In[15]:
-
-
-df['OPINIAO'] = df['PALAVRAS']
-df['LEMBRANCA_DE_MARCA'] = df['LEMB_MARCAS']
-
-
-# <h3 style='color:black'>3.2. APPEND</h3>
-
 # O bloco de código abaixo junta a base da "série histórica" atual, com o último flight citado:
 
-# In[16]:
+# In[13]:
 
 
 df = df.append(fl, ignore_index=True, sort=False)
 df["ID"] = (df.index)+1
 
+# Variável para gerar o arquivo para a próxima série histórica que vai se tornar o DF de Base dos outros flights
+OPT_GERAR_PROX_SERIE_HISTORICA = 1
+
+
+# <h3 style='color:black'>3.1. Gerar arquivo da próxima série histórica com o flight atual já adicionado</h3>
+
+# In[14]:
+
+
+if OPT_GERAR_PROX_SERIE_HISTORICA == 1:
+    writeDF_FL(df, 'SERIE_HISTORICA_FL')
+    print('Nova série histórica gerada com sucesso!')
+
 
 # ---
 
-# <h2 style='color:black'>4. Manipulação do DF de base e criação de funções</h2>
+# <h2 style='color:black'>4. Manipulação do DF de Base</h2>
 
 # Exceção para verificar se existem todas as colunas no DataFrame e deletar a coluna 'IP'.
 # Se retornar um erro, o bloco de código passa sem executar nada:
 
-# In[17]:
+# In[15]:
 
 
 try:
@@ -208,47 +258,18 @@ except:
 
 # Cria um item no DataFrame 'df' chamado 'IX' e o configura para ser igual ao 'ID'. Em seguida o configura para ser o índice do dicionário:
 
-# In[18]:
+# In[16]:
 
 
 df["IX"] = df["ID"]
 df = df.set_index("IX")
 
 
-# Define a função 'loadDF' que têm três argumentos:
-# - file = nome do arquivo
-# - enc = tipo de codificação (por padrão é 'utf-8')
-# - sep = tipo do separador dos valores no arquivo (por padrão é ',')
-# 
-# A função lê o arquivo (precisa ser "txt") e o aloca na variável em que for chamado:
-
-# In[19]:
-
-
-def loadDF(file, enc="UTF-8", sep=','): return pd.read_csv(PATH_R + r'\{0}.txt'.format(file), encoding=enc, sep=sep)
-
-#def loadDF(file): return pd.read_csv(r'/Users/damorim/Documents/Notebooks/{0}.txt'.format(file), encoding="UTF-8", sep=",")
-
-
-# Define a função 'writeDF' que têm quatro argumentos:
-# - dfr = nome do DataFrame ('df' alguma coisa) que é definido nesse script
-# - file = nome do arquivo "txt" em que o DataFrame vai ser escrito
-# - enc = tipo de codificação (por padrão é 'utf-8')
-# - sep = tipo do separador dos valores no arquivo (por padrão é ',')
-# 
-# A função escreve o DataFrame criado no python em um arquivo "txt":
-
-# In[20]:
-
-
-def writeDF(dfr, file, enc="UTF-8", sep=','): return dfr.to_csv(PATH_W + r'\{0}.txt'.format(file), header=True, encoding=enc, sep=",", float_format="%.3f")
-
-
 # ---
 
 # <h2 style='color:black'>5. Tratamento de METADADOS</h2>
 
-# In[21]:
+# In[17]:
 
 
 meta = loadDF("METADADOS", enc="UTF-8")
@@ -262,7 +283,7 @@ meta = meta.set_index("COLUNA2")
 
 # Define o DataFrame 'df_fotos' utilizando a função 'loadDF' e já configura a coluna 'CELEBRIDADE' como índice:
 
-# In[22]:
+# In[18]:
 
 
 df_fotos = loadDF('\FOTOS', enc= 'ISO-8859-1', sep='\t').set_index('CELEBRIDADE')
@@ -275,51 +296,58 @@ df_fotos
 
 # Define o DataFrame 'df_categorias' utilizando a função 'loadDF':
 
-# In[23]:
+# In[19]:
 
 
 df_categorias = loadDF('\CATEGORIAS', enc= 'ISO-8859-1', sep='\t')
 
 
-# ---
+# <h3 style='color:black'>7.1 Verificação - CELEBRIDADES x CATEGORIAS</h3>
 
-# <h2 style='color:black'>8. Arquivo para conferir se todas as CELEBRIDADES estão CATEGORIZADAS</h2>
-
-# In[24]:
+# In[20]:
 
 
-VERIF_CATEG = 1
-df4 = df.reset_index().set_index('CELEBRIDADE')
-df5 = df_categorias.reset_index().set_index('CELEBRIDADE').join(df4)
-df6 = df5[ df5['CATEGORIA'].isna()]
+df4 = df_categorias.reset_index().set_index('CELEBRIDADE')
 
-print(df6)
+#Join entre BASE e CATEGORIAS
+df = df.reset_index().set_index('CELEBRIDADE').join(df4, how='inner').reset_index().set_index('IX')
+
+#Mostra quais CELEBRIDADES não estão classificadas
+df6 = df[ df['CATEGORIA'].isna()]
+
+#Cria um arquivo se houver CELEBRIDADES NÃO CATEGORIZADAS
+if df6.shape[:1] == (0,):
+    print(df6)
+else:
+    writeDF(df6, 'COMP_CATEG')
 
 
-# ---
+# <h3 style='color:black'>7.2 Tratamento do DataFrame de Categorias</h3>
 
 # Atualiza o DataFrame 'df_categorias' resetando o índice do DataFrame. **Por não ter o argumento *drop=True*, o índice antigo se transforma numa nova coluna no DataFrame**.
 # 
 # Em seguida cria um DataFrame no qual o índice é a coluna 'CELEBRIDADE' e a coluna do DataFrame é a 'CATEGORIA', agrupando tudo através da função *lambda* definida, ao invés do padrão que é *numpy.mean* (**verificar com o Danilo para quê isso foi feito**):
 
-# In[25]:
+# In[21]:
 
 
-df_categorias = df_categorias      .reset_index()     .pivot_table(index='CELEBRIDADE' ,columns=['CATEGORIA'], aggfunc=lambda x : x)
+#df_categorias = df_categorias  \
+#    .reset_index() \
+#    .pivot_table(index='CELEBRIDADE' ,columns=['CATEGORIA'], aggfunc=lambda x : x)
 
 
 # ---
 
-# <h2 style='color:black'>9. Join entre a BASE e FOTOS</h2>
+# <h2 style='color:black'>8. Join entre BASE e FOTOS</h2>
 
 # O código abaixo executa os seguintes passos:
-# 1. Reseta o índice do DataFrame 'df' (que puxou o arquivo 'SERIE_HISTORICA_v2')
+# 1. Reseta o índice do DataFrame 'df' (que puxou o arquivo 'SERIE_HISTORICA_FL21')
 # 2. Configura como novo índice a coluna 'CELEBRIDADE'
 # 3. Junta o 'df' com 'df_fotos' utilizando os seus índices (de ambos são a coluna 'CELEBRIDADE')
 # 4. Reseta o índice de 'df' novamente (já que já foi utilizado para o *join*)
 # 5. Configura novamente o índice para a coluna 'IX'
 
-# In[26]:
+# In[22]:
 
 
 df = df.reset_index().set_index('CELEBRIDADE').join(df_fotos).reset_index().set_index('IX')
@@ -329,14 +357,14 @@ df = df.reset_index().set_index('CELEBRIDADE').join(df_fotos).reset_index().set_
 # 
 # A função *head()* retorna, por padrão, as primeiras 5 linhas do DataFrame para verificar os tipos de dados que o DataFrame contém.
 
-# In[27]:
+# In[23]:
 
 
 # Verificação de print() sem o option_context()
 print(df.head())
 
 
-# In[28]:
+# In[24]:
 
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
@@ -345,11 +373,12 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
 
 # ---
 
-# In[29]:
+# <h2 style='color:black'>9. Verificação - Problemas na BASE</h2>
+
+# In[25]:
 
 
-#<h2 style='color:black'>10. Arquivo para conferir se todas as CELEBRIDADES têm FOTOS</h2>
-#
+#Verificação - CELEBRIDADES x FOTOS
 #VERIF_FOTOS = 1
 #df3 = df[ df["FOTO_P"].isna() ]
 #print(df3["CELEBRIDADE"].unique(), "Coluna FOTO_P")
@@ -363,11 +392,7 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
 #    print("Arquivo exportado")
 
 
-# ---
-
-# <h2 style='color:black'>11. Conferência de possíveis problemas na BASE</h2>
-
-# In[ ]:
+# In[26]:
 
 
 # with pd.option_context('display.max_rows', None, 'display.max_columns', 10):
@@ -387,7 +412,7 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
 # 
 # Em seguida printa o *subset* do *Series* 'df2' puxando todos os valores distintos na coluna 'FLIGHT' (no SQL = SELECT DISTINCT FLIGHT FROM df2):
 
-# In[ ]:
+# In[27]:
 
 
 # FLIGHT 18 TÁ CAGADO, fizeram alguma bosta na coluna de Estado. Tem que esperar o Gui arrumar
@@ -397,7 +422,7 @@ print(df2["FLIGHT"].unique())
 
 # A função *isnull()* (também conhecida como *isna()*) retorna 'True' para cada valor nulo na coluna. Foi utilizado para buscar por valores nulos no DataFrame (aparentemente esperava-se que tudo estivesse preenchido).
 
-# In[ ]:
+# In[28]:
 
 
 # FLIGHT 9 TÁ CAGADO, fizeram alguma bosta nas colunas de perfil demográfico, pois estão vazias
@@ -417,7 +442,7 @@ print(df2["FLIGHT"].unique())
 
 # Faz a mesma verificação por valores nulos só que dessa vez criando uma cópia do resultado e o associando em 'df2':
 
-# In[ ]:
+# In[29]:
 
 
 # FLIGHTS 8, 11, 12 possuem a coluna de 'AWARENESS' vazio
@@ -426,7 +451,7 @@ df2 =  df [ pd.isnull(df["AWARENESS"]) ].copy()
 
 # Printa as quantidades de celebridades em 'df2' agrupando pela coluna 'FLIGHT':
 
-# In[ ]:
+# In[30]:
 
 
 print(df2.groupby("FLIGHT")["CELEBRIDADE"].count() )
@@ -434,7 +459,7 @@ print(df2.groupby("FLIGHT")["CELEBRIDADE"].count() )
 
 # Cria a variável 'ls_cols' e associa a ela uma lista criada a partir da coluna 'AWARENESS':
 
-# In[ ]:
+# In[31]:
 
 
 ls_cols = list(["AWARENESS"])
@@ -444,7 +469,7 @@ ls_cols = list(["AWARENESS"])
 # 
 # O item *.columns* faz com que sejam "puxados" somente os *labels* das colunas que no caso são as escalas:
 
-# In[ ]:
+# In[32]:
 
 
 ls_cols.extend(pd.Series(df.columns)[13:-3])
@@ -452,7 +477,7 @@ ls_cols.extend(pd.Series(df.columns)[13:-3])
 
 # Cria um DataFrame com a *Series* da lista 'ls_cols':
 
-# In[ ]:
+# In[33]:
 
 
 df2 = df [ pd.Series(ls_cols) ]
@@ -460,13 +485,13 @@ df2 = df [ pd.Series(ls_cols) ]
 
 # Printa um sumário com as principais estatísticas excluindo-se os valores *NaN*:
 
-# In[ ]:
+# In[34]:
 
 
 print(df2.describe())
 
 
-# In[ ]:
+# In[35]:
 
 
 # As escalas ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE e INDICARIA_PARA_AMIGOS_MARCAS não foram respondidas no flight 8
@@ -476,7 +501,7 @@ print(df2.describe())
 # 
 # Busca no DataFrame 'df' quais são as CELEBRIDADES que são conhecidas e que os respondentes preencheram no campo 'GOSTO_MUITO'.
 
-# In[ ]:
+# In[36]:
 
 
 df2 = df[ df["AWARENESS"] == 1 &  pd.notnull( df["GOSTO_MUITO"]) ]
@@ -484,7 +509,7 @@ df2 = df[ df["AWARENESS"] == 1 &  pd.notnull( df["GOSTO_MUITO"]) ]
 
 # Cria uma *Series* dos *labels* do DataFrame 'df2' para verificar o DataFrame contém todas as colunas necessárias:
 
-# In[ ]:
+# In[37]:
 
 
 print(pd.Series(df2.columns))
@@ -492,7 +517,7 @@ print(pd.Series(df2.columns))
 
 # Busca por colunas que possuem valores nulos e seus respectivos 'FLIGHTS':
 
-# In[ ]:
+# In[38]:
 
 
 print( df2 [ pd.isnull(df2["GOSTO_MUITO"]) ]["FLIGHT"].unique() )
@@ -526,7 +551,7 @@ print ("\n\n")
 # 
 # Cria uma condição em que é necessário que as colunas sejam nulas e que o 'AWARENESS' seja igual a 1, para printar a quantidade de CELEBRIDADES agrupadas por 'FLIGHT' em que essas condições sejam verdadeiras:
 
-# In[ ]:
+# In[39]:
 
 
 df3 = df2[ pd.isnull(df2["ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE"]) & df2["AWARENESS"] == 1  ]
@@ -540,7 +565,7 @@ print ("\n\n")
 
 # **Verificar com Danilo por que foi feito pelo 'df' e não pelo 'df2' igual aos outros**
 
-# In[ ]:
+# In[40]:
 
 
 # FLIGHT 17 possui 1 registro que apesar de ter marcado que conhece o artista, não respondeu nenhuma escala
@@ -555,26 +580,28 @@ print(df2.groupby("AWARENESS")["CELEBRIDADE"].count() )
 
 # ---
 
-# <h2 style='color:black'>12. Carregamento de 'tabelas auxiliares'</h2>
+# <h2 style='color:black'>10. Tabelas auxiliares</h2>
 
-# In[30]:
+# In[41]:
 
 
 df_escolaridade = loadDF('ESCOLARIDADE')
 df_estado_civil = loadDF('ESTADOCIVIL')
 df_idade = loadDF('IDADE')
+df_idade2 = loadDF('IDADE_FL8_14')
 df_renda = loadDF('RENDA')
 df_uf = loadDF('UF')
 
 
 # Cria um dicionário para fazer a mesma função que as tabelas auxiliares que são importadas no SQL Server:
 
-# In[31]:
+# In[42]:
 
 
 dictAux = {     "ESCOLARIDADE" : df_escolaridade.set_index('COD_ESCOLARIDADE')
               , "ESTADOCIVIL"  : df_estado_civil.set_index('COD_ESTADOCIVIL')
               , "IDADE"        : df_idade.set_index('COD_IDADE')
+              , "IDADE_FL8_14" : df_idade2.set_index('COD_IDADE')
               , "RENDA"        : df_renda.set_index('COD_RENDA')
               , "UF"           : df_uf.set_index('COD_ESTADO')
           }
@@ -582,9 +609,9 @@ dictAux = {     "ESCOLARIDADE" : df_escolaridade.set_index('COD_ESCOLARIDADE')
 
 # ---
 
-# <h2 style='color:red'>13. Views para o PowerBI</h2>
+# <h2 style='color:red'>11. Views para o PowerBI</h2>
 
-# <h3 style='color:blue'>13.1. VW_BASE</h3>
+# <h3 style='color:blue'>11.1. VW_BASE</h3>
 
 # Cria uma cópia do DataFrame 'df' e o nomeia como 'df_base'.
 # 
@@ -592,8 +619,11 @@ dictAux = {     "ESCOLARIDADE" : df_escolaridade.set_index('COD_ESCOLARIDADE')
 # 
 # A função *where()* é semelhante à um *if* no excel, em que se determinada condição for satisfeita, executar a primeira opção, caso contrário executar a segunda (*where(condition, True, False)*):
 
-# In[ ]:
+# In[43]:
 
+
+#Necessário colocar um IF para verificar se é um flight > que 15 para fazer o join com o arquivo "IDADE", 
+#caso contrário faz o join com o arquivo "IDADE_FL8_14"
 
 df_base = df.copy()
 
@@ -608,15 +638,9 @@ df_base["IDADE"] = df["IDADE"]
 df_base["RENDA"] = df["RENDA"]
 df_base["ESTADO"] = df["ESTADO"]
 
-# Correção realizada: 1 - Masculino ; 2 - Feminino
-df_base["SEXO"] = np.where(df["SEXO"] == 1, "Masculino", "Feminino")
+# Correção realizada: 1 - Feminino ; 2 - Masculino
+df_base["SEXO"] = np.where(df["SEXO"] == 1, "Feminino", "Masculino")
 df_base["TEM_FILHOS"] = np.where(df["TEM_FILHOS"] == 1, "Sim", "Não")
-
-#with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
-    #print( df_base[ pd.isnull(df_base['REGIAO']) ].groupby('FLIGHT')["ID"].count()  )
-    #print( sorted(df_base[ df_base["FLIGHT"] == 9 ]["ESTADO"].unique()) ) 
-
-#print(pd.Series(df_base.columns)) 
 
 
 # Deleta as colunas de 'df_base' que estão com os valores antigos, usados para puxar os valores no *join* e renomeia as colunas que vieram das "tabelas auxiliares" para fazer o papel das colunas deletadas:
@@ -656,136 +680,27 @@ if OPT_GERAR_VW_BASE == 1:
 
 # ---
 
-# <h3 style='color:purple'>VW_BASE_METRICAS (passo-a-passo)</h3>
+# <h3 style='color:blue'>11.2. VW_BASE_METRICAS (FULL)</h3>
 
 # In[ ]:
-
-
-#df_awareness = df.copy()
-#print(df_awareness.head())
-
-
-# In[ ]:
-
-
-#df_awareness['AW'] = np.where( df_awareness['AWARENESS'] == 1, 'S', 'N' )
-
-
-# In[ ]:
-
-
-#df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
-#print(df_awareness.head())
-
-
-# In[ ]:
-
-
-#df_awareness = df_awareness[ pd.Series(['CELEBRIDADE','FLIGHT','AW', 'ID']) ].pivot_table('ID',['CELEBRIDADE','FLIGHT'],'AW')
-#print(df_awareness.head())
-
-
-# In[ ]:
-
-
-#df_awareness['S']
-
-
-# In[ ]:
-
-
-#df_awareness["AWARENESS"] = df_awareness['S'] / (df_awareness['S'] + df_awareness['N'])
-#print(df_awareness)
-
-
-# In[ ]:
-
-
-#df_awareness["AWARENESS_NIVEL"] = np.where( df_awareness['AWARENESS'] >= 0.65, 'Alto', 'Baixo' )
-#print(df_awareness)
-
-
-# In[ ]:
-
-
-#cols = [
-#    'ID',
-#    'CELEBRIDADE',
-#    'FLIGHT',
-#    'GOSTO_MUITO',
-#    'ME_IDENTIFICO',
-#    'TENHO_RESPEITO',
-#    'PRESTO_ATENCAO',
-#    'CONFIO',
-#    'MUITO_BOM_NAQUILO_QUE_FAZ',
-#    'INTELIGENTE',
-#    'DETERMINADO',
-#    'HONESTO',
-#    'ENGRAÇADO',
-#    'LINDO',
-#    'SEDUTOR',
-#    'DO_POVO',
-#    'CARA_DO_BRASIL',
-#    'INOVADOR',
-#    'GOSTA_DE_DESAFIOS',
-#    'TENHO_VISTO_NA_MIDIA',
-#    'BOA_PARA_PROPAGANDA',
-#    'COMPRARIA_PRODUTOS_QUE_ANUNCIASSE',
-#    'BOA_PARA_PROPAGANDA_PROJETOS_SOCIAIS',
-#    'ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE',
-#    'INDICARIA_PARA_AMIGOS_MARCAS',
-#    'COMENTARIA_COM_AMIGOS_PROJETOS_SOCIAIS_QUE_ANUNCIASSE',
-#]
-#
-#df_metricas = df.copy()
-#print(df_metricas.head())
-
-
-# In[ ]:
-
-
-#df_metricas = df_metricas[ pd.Series(cols) ]    \
-#    .melt(id_vars=['ID', 'CELEBRIDADE', 'FLIGHT' ],  value_name= 'VALOR', var_name='METRICA')     \
-#    .set_index("METRICA")     \
-#    .join(meta)
-
-
-# In[ ]:
-
-
-#df_metricas["TOP2"] = np.where( df_metricas["VALOR"] >= 6 , 1 , 0 )
-#df_metricas["BOT2"] = np.where( (df_metricas["VALOR"] <= 2) & (df_metricas["VALOR"] > 0) , 1 , 0 )
-#print(df_metricas.head())
-
-
-# In[ ]:
-
-
-#del df_metricas["PERGUNTA"]
-#del df_metricas["COLUNA"]
-
-
-# In[ ]:
-
-
-#df_metricas = df_metricas     \
-#        .set_index(['CELEBRIDADE','FLIGHT'])     \
-#        .join(df_awareness)     \
-#        .set_index("ID")     \
-#        .join( df[ pd.Series([ "FOTO_G" , "FOTO_M" , "FOTO_P", 'CELEBRIDADE', 'FLIGHT' ]) ]  )
-#print(df_metricas.head())
-
-
-# ----------
-
-# <h3 style='color:blue'>13.2. VW_BASE_METRICAS (FULL)</h3>
-
-# In[33]:
 
 
 df_awareness = df.copy()
 
 df_awareness['AW'] = np.where( df_awareness['AWARENESS'] == 1, 'S', 'N' )
+
+
+# In[ ]:
+
+
+df_aw = df.copy()
+
+df_aw['AW'] = np.where( df_aw['AWARENESS'] == 1, 1, 0 )
+
+
+# In[ ]:
+
+
 df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
 df_awareness = df_awareness[ pd.Series(['CELEBRIDADE','FLIGHT','AW', 'ID']) ].pivot_table('ID',['CELEBRIDADE','FLIGHT'],'AW')
 df_awareness["AWARENESS"] = df_awareness['S'] / (df_awareness['S'] + df_awareness['N'])
@@ -849,14 +764,15 @@ df_metr2 = df_metr1[['FLIGHT', 'METRICA', 'POSITIVO_G', 'NEGATIVO_G']]
 df_metr2 = df_metr2.groupby(['FLIGHT', 'METRICA']).mean().sort_index(ascending=False)
 
 
-# In[38]:
+# In[ ]:
 
 
-# Merge no df_metricas
-df_metricas = df_metricas.merge(df_metr2, how='inner', left_on=['FLIGHT', 'METRICA'], right_on=['FLIGHT', 'METRICA'])
+# Join no df_metricas
+df_metricas = df_metricas.join(df_metr2, how='inner', on=['FLIGHT', 'METRICA'])
+df_metricas.index
 
 
-# In[41]:
+# In[ ]:
 
 
 if OPT_GERAR_VW_BASE_METRICAS == 1:
@@ -865,6 +781,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
     df_metricas.rename( columns ={ "index" : "ID"}, inplace=True)    
     df_metricas = df_metricas.set_index("ID")
     writeDF(df_metricas, 'VW_BASE_METRICAS')
+    writeDF(df_aw, 'VW_AW')
     
     print("Arquivo exportado")
 
@@ -999,7 +916,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 
 # -----
 
-# <h3 style='color:blue'>13.3. VW_COMPARATIVO (FULL)</h3>
+# <h3 style='color:blue'>11.3. VW_COMPARATIVO (FULL)</h3>
 
 # In[ ]:
 
@@ -1047,6 +964,8 @@ if OPT_GERAR_VW_COMP == 1:
 
 
 # ---
+
+# <h2 style='color:orange'>12. Verificação - Diversos</h2>
 
 # <h4 style='color:orange'>(Verificação) Pegar somente a quantidade de 'S' de cada 'CELEBRIDADE':</h4>
 
