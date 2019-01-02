@@ -18,9 +18,7 @@ Como consequência, foi feita a alteração dos nomes das celebridades da série
 ---
 <h2>Pós-controle de versões</h2>
 
-* O controle de versões será feito só de arquivos .py e do log de alterações entre flights.
-
-* O notebook do Jupyter (arquivo .ipynb) é armazenado na pasta padrão do projeto.
+* O controle de versões será feito só de arquivos .py, .ipynb e do log de alterações entre flights.
 
 * Toda vez que for criar uma nova versão no Jupyter Notebook, é necessário fazer o commit da versão de python funcional e atual (que se tornará a versão anterior).
 
