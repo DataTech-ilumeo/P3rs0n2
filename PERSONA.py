@@ -644,32 +644,32 @@ df_base = df_base.set_index('ESTADO_CIVIL').join(dictAux["ESTADOCIVIL"])
 df_base = df_base.set_index('IDADE').join(dictAux["IDADE"])
 df_base = df_base.set_index('RENDA').join(dictAux["RENDA"])
 df_base = df_base.set_index('ESTADO').join(dictAux["UF"])
-df_base["ESCOLARIDADE"] = df["ESCOLARIDADE"]
-df_base["ESTADO_CIVIL"] = df["ESTADO_CIVIL"]
-df_base["IDADE"] = df["IDADE"]
-df_base["RENDA"] = df["RENDA"]
-df_base["ESTADO"] = df["ESTADO"]
+# df_base["ESCOLARIDADE"] = df["ESCOLARIDADE"]
+# df_base["ESTADO_CIVIL"] = df["ESTADO_CIVIL"]
+# df_base["IDADE"] = df["IDADE"]
+# df_base["RENDA"] = df["RENDA"]
+# df_base["ESTADO"] = df["ESTADO"]
 
 # Correção realizada: 1 - Feminino ; 2 - Masculino
 df_base["SEXO"] = np.where(df["SEXO"] == 1, "Feminino", "Masculino")
 df_base["TEM_FILHOS"] = np.where(df["TEM_FILHOS"] == 1, "Sim", "Não")
 
 
-# In[54]:
+# In[45]:
 
 
-df.columns
+df_base.columns
 
 
 # Deleta as colunas de 'df_base' que estão com os valores antigos, usados para puxar os valores no *join* e renomeia as colunas que vieram das "tabelas auxiliares" para fazer o papel das colunas deletadas:
 
-# In[ ]:
+# In[46]:
 
 
-del df_base["ESTADO"]
-del df_base["RENDA"]
-del df_base["ESCOLARIDADE"]
-del df_base["IDADE"]
+# del df_base["ESTADO"]
+# del df_base["RENDA"]
+# del df_base["ESCOLARIDADE"]
+# del df_base["IDADE"]
 
 df_base.rename( columns ={ 
     "UF_NOME" : "ESTADO" ,
@@ -685,7 +685,7 @@ df_base.rename( columns ={
 # Ordena pela coluna 'ID' de forma ascendente e a configura para ser índice (key).
 # Em seguida usa a função 'writeDF' para escrever o DataFrame no arquivo "VW_BASE.txt":
 
-# In[ ]:
+# In[47]:
 
 
 if OPT_GERAR_VW_BASE == 1:
@@ -700,7 +700,7 @@ if OPT_GERAR_VW_BASE == 1:
 
 # <h3 style='color:blue'>11.2. VW_BASE_METRICAS (FULL)</h3>
 
-# In[ ]:
+# In[48]:
 
 
 df_awareness = df.copy()
@@ -708,7 +708,7 @@ df_awareness = df.copy()
 df_awareness['AW'] = np.where( df_awareness['AWARENESS'] == 1, 'S', 'N' )
 
 
-# In[ ]:
+# In[49]:
 
 
 df_aw = df.copy()
@@ -716,7 +716,7 @@ df_aw = df.copy()
 df_aw['AW'] = np.where( df_aw['AWARENESS'] == 1, 1, 0 )
 
 
-# In[ ]:
+# In[50]:
 
 
 df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
@@ -782,7 +782,7 @@ df_metr2 = df_metr1[['FLIGHT', 'METRICA', 'POSITIVO_G', 'NEGATIVO_G']]
 df_metr2 = df_metr2.groupby(['FLIGHT', 'METRICA']).mean().sort_index(ascending=False)
 
 
-# In[ ]:
+# In[51]:
 
 
 # Join no df_metricas
@@ -790,7 +790,7 @@ df_metricas = df_metricas.join(df_metr2, how='inner', on=['FLIGHT', 'METRICA'])
 df_metricas.index
 
 
-# In[ ]:
+# In[52]:
 
 
 if OPT_GERAR_VW_BASE_METRICAS == 1:
@@ -809,27 +809,27 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 
 # <h3 style='color:purple'>VW_COMPARATIVO (passo-a-passo)</h3>
 
-# In[ ]:
+# In[53]:
 
 
 #df_latest_flight = df.groupby('CELEBRIDADE').max()['FLIGHT'].reset_index().set_index(['CELEBRIDADE','FLIGHT'])
 
 
-# In[ ]:
+# In[54]:
 
 
 #df_comp = df_metricas \
 #    .join(df['AWARENESS'], rsuffix='_SN') 
 
 
-# In[ ]:
+# In[55]:
 
 
 #Visualização
 #df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
 
 
-# In[ ]:
+# In[56]:
 
 
 #df_count_total = df \
@@ -842,7 +842,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #df_count_aw.rename( columns ={ "ID": "COUNT"}, inplace=True)    
 
 
-# In[ ]:
+# In[57]:
 
 
 #df_count = df_count_total \
@@ -850,27 +850,27 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .join(df_count_aw.set_index(['FLIGHT','CELEBRIDADE']), rsuffix='_AW')
 
 
-# In[ ]:
+# In[58]:
 
 
 #Visualização
 #df_count.index
 
 
-# In[ ]:
+# In[59]:
 
 
 #del df_count_total
 #del df_count_aw
 
 
-# In[ ]:
+# In[60]:
 
 
 #df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
 
 
-# In[ ]:
+# In[61]:
 
 
 #df_comp = df_comp[ df_comp['AWARENESS_SN'] == 1 ] \
@@ -878,14 +878,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .agg({ "TOP2" : "sum", "BOT2" : "sum" })
 
 
-# In[ ]:
+# In[62]:
 
 
 #Visualização --> No passo acima algumas celebridades do flight 23 somem...
 #verificacao1 = df_comp[df_comp['FLIGHT'] == 23]
 
 
-# In[ ]:
+# In[63]:
 
 
 #Visualização --> No passo acima algumas celebridades do flight 23 somem porque algumas das celebridades não têm as fotos,
@@ -893,7 +893,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #verificacao1['CELEBRIDADE'].unique()
 
 
-# In[ ]:
+# In[64]:
 
 
 #df_comp = df_comp \
@@ -902,14 +902,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .join(df_count)
 
 
-# In[ ]:
+# In[65]:
 
 
 #df_comp['TOP2'] = df_comp['TOP2'] / df_comp['COUNT_AW']
 #df_comp['BOT2'] = df_comp['BOT2'] / df_comp['COUNT_AW']
 
 
-# In[ ]:
+# In[66]:
 
 
 #df_comp = df_comp \
@@ -918,7 +918,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #    .join( df_latest_flight, how='inner' )
 
 
-# In[ ]:
+# In[67]:
 
 
 #df_comp = df_comp \
@@ -926,14 +926,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #    .set_index(['CONSTRUCTO','METRICA'])
 
 
-# In[ ]:
+# In[68]:
 
 
 #del df_comp['COUNT']
 #del df_comp['COUNT_AW']
 
 
-# In[ ]:
+# In[69]:
 
 
 #df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
@@ -941,7 +941,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 
 # <h3 style='color:blue'>11.3. VW_COMPARATIVO (FULL)</h3>
 
-# In[ ]:
+# In[70]:
 
 
 # Comparativo pelo último flight (21)
@@ -976,7 +976,7 @@ del df_comp['COUNT_AW']
 df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
 
 
-# In[ ]:
+# In[71]:
 
 
 if OPT_GERAR_VW_COMP == 1:
@@ -992,14 +992,14 @@ if OPT_GERAR_VW_COMP == 1:
 
 # <h4 style='color:orange'>(Verificação) Pegar somente a quantidade de 'S' de cada 'CELEBRIDADE':</h4>
 
-# In[ ]:
+# In[72]:
 
 
 idc = df_awareness.index
 print(idc)
 
 
-# In[ ]:
+# In[73]:
 
 
 print(df_awareness.loc[['Alessandra Negrini', '21']])
