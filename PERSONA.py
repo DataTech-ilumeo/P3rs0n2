@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 # coding: utf-8
 
 # <h1 style='color:#ef9709'>PERSONAS - SÉRIE HISTÓRICA</h1>
@@ -11,7 +11,7 @@
 #     <th style="text-align:center">Autor</th> 
 #   </tr>
 #   <tr>
-#     <td style="text-align:left">03/01/2019</td>
+#     <td style="text-align:left">20/03/2019</td>
 #     <td style="text-align:left">Kevin Nakasaki</td> 
 #   </tr>
 # </table>
@@ -180,6 +180,10 @@ else:
 #     <td style="text-align:center">12/11/2018</td>
 #     <td style="text-align:center">23</td> 
 #   </tr>
+#   <tr>
+#     <td style="text-align:center">08/03/2018</td>
+#     <td style="text-align:center">24</td> 
+#   </tr>
 # </table>
 
 # In[10]:
@@ -299,13 +303,20 @@ df_fotos = loadDF('\FOTOS', enc= 'ISO-8859-1', sep='\t').set_index('CELEBRIDADE'
 df_fotos
 
 
+# In[20]:
+
+
+#Verificar se está vindo certo (provisório: 04/01/2019)
+df_fotos[df_fotos.index == 'Eduardo Moscovis']
+
+
 # ---
 
 # <h2 style='color:black'>7. Tratamento de CATEGORIAS</h2>
 
 # Define o DataFrame 'df_categorias' utilizando a função 'loadDF':
 
-# In[20]:
+# In[21]:
 
 
 #df_categorias = loadDF('\CATEGORIAS', enc= 'ISO-8859-1', sep='\t')
@@ -313,7 +324,7 @@ df_fotos
 
 # <h3 style='color:black'>7.1 Verificação - CELEBRIDADES x CATEGORIAS</h3>
 
-# In[21]:
+# In[22]:
 
 
 #df4 = df_categorias.reset_index().set_index('CELEBRIDADE')
@@ -332,7 +343,7 @@ df_fotos
 #    writeDF(df6, 'COMP_CATEG')
 
 
-# In[22]:
+# In[23]:
 
 
 #<h3 style='color:black'>7.2 Tratamento do DataFrame de Categorias</h3>
@@ -359,7 +370,7 @@ df_fotos
 # 4. Reseta o índice de 'df' novamente (já que já foi utilizado para o *join*)
 # 5. Configura novamente o índice para a coluna 'IX'
 
-# In[23]:
+# In[24]:
 
 
 df = df.reset_index().set_index('CELEBRIDADE').join(df_fotos).reset_index().set_index('IX')
@@ -369,25 +380,32 @@ df = df.reset_index().set_index('CELEBRIDADE').join(df_fotos).reset_index().set_
 # 
 # A função *head()* retorna, por padrão, as primeiras 5 linhas do DataFrame para verificar os tipos de dados que o DataFrame contém.
 
-# In[24]:
+# In[25]:
 
 
 # Verificação de print() sem o option_context()
 print(df.head())
 
 
-# In[25]:
+# In[26]:
 
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
     print(df.head())
 
 
+# In[27]:
+
+
+#Verificar se está vindo certo (provisório: 04/01/2019)
+df[df["CELEBRIDADE"] == 'Eduardo Moscovis']
+
+
 # ---
 
 # <h2 style='color:black'>9. Verificação - Problemas na BASE</h2>
 
-# In[26]:
+# In[28]:
 
 
 #Verificação - CELEBRIDADES x FOTOS
@@ -404,7 +422,7 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
 #    print("Arquivo exportado")
 
 
-# In[27]:
+# In[29]:
 
 
 # with pd.option_context('display.max_rows', None, 'display.max_columns', 10):
@@ -424,7 +442,7 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', 100):
 # 
 # Em seguida printa o *subset* do *Series* 'df2' puxando todos os valores distintos na coluna 'FLIGHT' (no SQL = SELECT DISTINCT FLIGHT FROM df2):
 
-# In[28]:
+# In[30]:
 
 
 # FLIGHT 18 TÁ CAGADO, fizeram alguma bosta na coluna de Estado. Tem que esperar o Gui arrumar
@@ -434,7 +452,7 @@ print(df2["FLIGHT"].unique())
 
 # A função *isnull()* (também conhecida como *isna()*) retorna 'True' para cada valor nulo na coluna. Foi utilizado para buscar por valores nulos no DataFrame (aparentemente esperava-se que tudo estivesse preenchido).
 
-# In[29]:
+# In[31]:
 
 
 # FLIGHT 9 TÁ CAGADO, fizeram alguma bosta nas colunas de perfil demográfico, pois estão vazias
@@ -454,7 +472,7 @@ print(df2["FLIGHT"].unique())
 
 # Faz a mesma verificação por valores nulos só que dessa vez criando uma cópia do resultado e o associando em 'df2':
 
-# In[30]:
+# In[32]:
 
 
 # FLIGHTS 8, 11, 12 possuem a coluna de 'AWARENESS' vazio
@@ -463,7 +481,7 @@ df2 =  df [ pd.isnull(df["AWARENESS"]) ].copy()
 
 # Printa as quantidades de celebridades em 'df2' agrupando pela coluna 'FLIGHT':
 
-# In[31]:
+# In[33]:
 
 
 print(df2.groupby("FLIGHT")["CELEBRIDADE"].count() )
@@ -471,7 +489,7 @@ print(df2.groupby("FLIGHT")["CELEBRIDADE"].count() )
 
 # Cria a variável 'ls_cols' e associa a ela uma lista criada a partir da coluna 'AWARENESS':
 
-# In[32]:
+# In[34]:
 
 
 ls_cols = list(["AWARENESS"])
@@ -481,7 +499,7 @@ ls_cols = list(["AWARENESS"])
 # 
 # O item *.columns* faz com que sejam "puxados" somente os *labels* das colunas que no caso são as escalas:
 
-# In[33]:
+# In[35]:
 
 
 ls_cols.extend(pd.Series(df.columns)[13:-3])
@@ -489,7 +507,7 @@ ls_cols.extend(pd.Series(df.columns)[13:-3])
 
 # Cria um DataFrame com a *Series* da lista 'ls_cols':
 
-# In[34]:
+# In[36]:
 
 
 df2 = df [ pd.Series(ls_cols) ]
@@ -497,13 +515,13 @@ df2 = df [ pd.Series(ls_cols) ]
 
 # Printa um sumário com as principais estatísticas excluindo-se os valores *NaN*:
 
-# In[35]:
+# In[37]:
 
 
 print(df2.describe())
 
 
-# In[36]:
+# In[38]:
 
 
 # As escalas ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE e INDICARIA_PARA_AMIGOS_MARCAS não foram respondidas no flight 8
@@ -513,7 +531,7 @@ print(df2.describe())
 # 
 # Busca no DataFrame 'df' quais são as CELEBRIDADES que são conhecidas e que os respondentes preencheram no campo 'GOSTO_MUITO'.
 
-# In[37]:
+# In[39]:
 
 
 df2 = df[ df["AWARENESS"] == 1 &  pd.notnull( df["GOSTO_MUITO"]) ]
@@ -521,7 +539,7 @@ df2 = df[ df["AWARENESS"] == 1 &  pd.notnull( df["GOSTO_MUITO"]) ]
 
 # Cria uma *Series* dos *labels* do DataFrame 'df2' para verificar o DataFrame contém todas as colunas necessárias:
 
-# In[38]:
+# In[40]:
 
 
 print(pd.Series(df2.columns))
@@ -529,7 +547,7 @@ print(pd.Series(df2.columns))
 
 # Busca por colunas que possuem valores nulos e seus respectivos 'FLIGHTS':
 
-# In[39]:
+# In[41]:
 
 
 print( df2 [ pd.isnull(df2["GOSTO_MUITO"]) ]["FLIGHT"].unique() )
@@ -563,7 +581,7 @@ print ("\n\n")
 # 
 # Cria uma condição em que é necessário que as colunas sejam nulas e que o 'AWARENESS' seja igual a 1, para printar a quantidade de CELEBRIDADES agrupadas por 'FLIGHT' em que essas condições sejam verdadeiras:
 
-# In[40]:
+# In[42]:
 
 
 df3 = df2[ pd.isnull(df2["ME_ENVOLVERIA_COM_PROJETOS_SOCIAIS_QUE_ANUNCIASSE"]) & df2["AWARENESS"] == 1  ]
@@ -577,7 +595,7 @@ print ("\n\n")
 
 # **Verificar com Danilo por que foi feito pelo 'df' e não pelo 'df2' igual aos outros**
 
-# In[41]:
+# In[43]:
 
 
 # FLIGHT 17 possui 1 registro que apesar de ter marcado que conhece o artista, não respondeu nenhuma escala
@@ -594,7 +612,7 @@ print(df2.groupby("AWARENESS")["CELEBRIDADE"].count() )
 
 # <h2 style='color:black'>10. Tabelas auxiliares</h2>
 
-# In[42]:
+# In[44]:
 
 
 df_escolaridade = loadDF('ESCOLARIDADE')
@@ -607,7 +625,7 @@ df_uf = loadDF('UF')
 
 # Cria um dicionário para fazer a mesma função que as tabelas auxiliares que são importadas no SQL Server:
 
-# In[43]:
+# In[45]:
 
 
 dictAux = {     "ESCOLARIDADE" : df_escolaridade.set_index('COD_ESCOLARIDADE')
@@ -631,7 +649,7 @@ dictAux = {     "ESCOLARIDADE" : df_escolaridade.set_index('COD_ESCOLARIDADE')
 # 
 # A função *where()* é semelhante à um *if* no excel, em que se determinada condição for satisfeita, executar a primeira opção, caso contrário executar a segunda (*where(condition, True, False)*):
 
-# In[44]:
+# In[46]:
 
 
 #Necessário colocar um IF para verificar se é um flight > que 15 para fazer o join com o arquivo "IDADE", 
@@ -655,7 +673,7 @@ df_base["SEXO"] = np.where(df["SEXO"] == 1, "Feminino", "Masculino")
 df_base["TEM_FILHOS"] = np.where(df["TEM_FILHOS"] == 1, "Sim", "Não")
 
 
-# In[45]:
+# In[47]:
 
 
 df_base.columns
@@ -663,7 +681,7 @@ df_base.columns
 
 # Deleta as colunas de 'df_base' que estão com os valores antigos, usados para puxar os valores no *join* e renomeia as colunas que vieram das "tabelas auxiliares" para fazer o papel das colunas deletadas:
 
-# In[46]:
+# In[48]:
 
 
 # del df_base["ESTADO"]
@@ -685,7 +703,7 @@ df_base.rename( columns ={
 # Ordena pela coluna 'ID' de forma ascendente e a configura para ser índice (key).
 # Em seguida usa a função 'writeDF' para escrever o DataFrame no arquivo "VW_BASE.txt":
 
-# In[47]:
+# In[49]:
 
 
 if OPT_GERAR_VW_BASE == 1:
@@ -700,7 +718,7 @@ if OPT_GERAR_VW_BASE == 1:
 
 # <h3 style='color:blue'>11.2. VW_BASE_METRICAS (FULL)</h3>
 
-# In[48]:
+# In[50]:
 
 
 df_awareness = df.copy()
@@ -708,7 +726,7 @@ df_awareness = df.copy()
 df_awareness['AW'] = np.where( df_awareness['AWARENESS'] == 1, 'S', 'N' )
 
 
-# In[49]:
+# In[51]:
 
 
 df_aw = df.copy()
@@ -716,7 +734,7 @@ df_aw = df.copy()
 df_aw['AW'] = np.where( df_aw['AWARENESS'] == 1, 1, 0 )
 
 
-# In[50]:
+# In[52]:
 
 
 df_awareness = df_awareness.groupby(['FLIGHT','CELEBRIDADE','AW'], as_index=False).count()
@@ -782,7 +800,7 @@ df_metr2 = df_metr1[['FLIGHT', 'METRICA', 'POSITIVO_G', 'NEGATIVO_G']]
 df_metr2 = df_metr2.groupby(['FLIGHT', 'METRICA']).mean().sort_index(ascending=False)
 
 
-# In[51]:
+# In[53]:
 
 
 # Join no df_metricas
@@ -790,7 +808,7 @@ df_metricas = df_metricas.join(df_metr2, how='inner', on=['FLIGHT', 'METRICA'])
 df_metricas.index
 
 
-# In[52]:
+# In[54]:
 
 
 if OPT_GERAR_VW_BASE_METRICAS == 1:
@@ -809,27 +827,27 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 
 # <h3 style='color:purple'>VW_COMPARATIVO (passo-a-passo)</h3>
 
-# In[53]:
+# In[55]:
 
 
 #df_latest_flight = df.groupby('CELEBRIDADE').max()['FLIGHT'].reset_index().set_index(['CELEBRIDADE','FLIGHT'])
 
 
-# In[54]:
+# In[56]:
 
 
 #df_comp = df_metricas \
 #    .join(df['AWARENESS'], rsuffix='_SN') 
 
 
-# In[55]:
+# In[57]:
 
 
 #Visualização
 #df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
 
 
-# In[56]:
+# In[58]:
 
 
 #df_count_total = df \
@@ -842,7 +860,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #df_count_aw.rename( columns ={ "ID": "COUNT"}, inplace=True)    
 
 
-# In[57]:
+# In[59]:
 
 
 #df_count = df_count_total \
@@ -850,27 +868,27 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .join(df_count_aw.set_index(['FLIGHT','CELEBRIDADE']), rsuffix='_AW')
 
 
-# In[58]:
+# In[60]:
 
 
 #Visualização
 #df_count.index
 
 
-# In[59]:
+# In[61]:
 
 
 #del df_count_total
 #del df_count_aw
 
 
-# In[60]:
+# In[62]:
 
 
 #df_comp[df_comp['CELEBRIDADE'] == 'Ana Vilela']
 
 
-# In[61]:
+# In[63]:
 
 
 #df_comp = df_comp[ df_comp['AWARENESS_SN'] == 1 ] \
@@ -878,14 +896,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .agg({ "TOP2" : "sum", "BOT2" : "sum" })
 
 
-# In[62]:
+# In[64]:
 
 
 #Visualização --> No passo acima algumas celebridades do flight 23 somem...
 #verificacao1 = df_comp[df_comp['FLIGHT'] == 23]
 
 
-# In[63]:
+# In[65]:
 
 
 #Visualização --> No passo acima algumas celebridades do flight 23 somem porque algumas das celebridades não têm as fotos,
@@ -893,7 +911,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #verificacao1['CELEBRIDADE'].unique()
 
 
-# In[64]:
+# In[66]:
 
 
 #df_comp = df_comp \
@@ -902,14 +920,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #        .join(df_count)
 
 
-# In[65]:
+# In[67]:
 
 
 #df_comp['TOP2'] = df_comp['TOP2'] / df_comp['COUNT_AW']
 #df_comp['BOT2'] = df_comp['BOT2'] / df_comp['COUNT_AW']
 
 
-# In[66]:
+# In[68]:
 
 
 #df_comp = df_comp \
@@ -918,7 +936,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #    .join( df_latest_flight, how='inner' )
 
 
-# In[67]:
+# In[69]:
 
 
 #df_comp = df_comp \
@@ -926,14 +944,14 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 #    .set_index(['CONSTRUCTO','METRICA'])
 
 
-# In[68]:
+# In[70]:
 
 
 #del df_comp['COUNT']
 #del df_comp['COUNT_AW']
 
 
-# In[69]:
+# In[71]:
 
 
 #df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
@@ -941,7 +959,7 @@ if OPT_GERAR_VW_BASE_METRICAS == 1:
 
 # <h3 style='color:blue'>11.3. VW_COMPARATIVO (FULL)</h3>
 
-# In[70]:
+# In[72]:
 
 
 # Comparativo pelo último flight (21)
@@ -976,7 +994,7 @@ del df_comp['COUNT_AW']
 df_compf = df_comp.join(df_comp, lsuffix = '_1', rsuffix = '_2')
 
 
-# In[71]:
+# In[73]:
 
 
 if OPT_GERAR_VW_COMP == 1:
@@ -992,14 +1010,14 @@ if OPT_GERAR_VW_COMP == 1:
 
 # <h4 style='color:orange'>(Verificação) Pegar somente a quantidade de 'S' de cada 'CELEBRIDADE':</h4>
 
-# In[72]:
+# In[74]:
 
 
 idc = df_awareness.index
 print(idc)
 
 
-# In[73]:
+# In[75]:
 
 
 print(df_awareness.loc[['Alessandra Negrini', '21']])
